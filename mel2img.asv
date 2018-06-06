@@ -37,7 +37,6 @@ for inum=1:size(dirOutput,1)
     % seq = mean(seq,2);% average of seq
     % hanning 返回针长度对称的汉明窗，window or window length
     % enframe :split signal frames;
-    % wavdata :enframed data - one frame per row 已编码数据，一行一帧
      wavdata = enframe(seq,hanning(framelength),frameincrement);
      
      %设置每个保存的文件名
