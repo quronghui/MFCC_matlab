@@ -8,14 +8,13 @@ function spec3d = melspectrogramcomputing(seq)%seq is a raw audio sequence(mono)
 %     seq = mean(seq,2);% average of seq
     %[z tc] = enframe(seq,hamming(1200),480);
 %     [z tc] = enframe(seq,framelength,frameincrement);
-   
 %     zfft=rfft(seq.');
-
+    % Calculate the DFT of real data Y=(X,N,D)
     zfft=rfft(seq.');
     
-    
+    % plot
     figure(1);
-    subplot 211;
+    subplot 211;    % 图形位置
     plot(1e4*seq(1,:))
     xlabel('f/频率hz')
     ylabel('y/幅值')
@@ -28,9 +27,8 @@ function spec3d = melspectrogramcomputing(seq)%seq is a raw audio sequence(mono)
     title('FFT频谱图')
     axis([0 202 0 6]);
     
-
+    % MEl fliter array
     xmelfilters=melbankm(p,framelength,fs,20/fs,0.5);
-
     zmel2=xmelfilters*abs(zfft).^2+  0.01;
     figure(2);
     plot((0:floor(framelength/2))*fs/framelength,xmelfilters');
@@ -53,32 +51,31 @@ function spec3d = melspectrogramcomputing(seq)%seq is a raw audio sequence(mono)
     ylabel('y/幅值')
     title('信号经过Mel滤波器后的频谱图');
     axis([0 65 9.8 10.8]);
+   
+    % 经过Mel_filter后的zfft
     zmelcy = xmelfilters*abs(zfft).^2+  0.01;
-%     figure(1);
-%     subplot 211;
-%     plot(zmelcy(2,:))
-    
     figure(4)
     subplot 211;
     plot(zmelcy(2,:))
     xlabel('f/频率hz')
     ylabel('y/幅值')
     title('信号经过Mel滤波器后的频谱图');
+ 
+    % 取自然对数和DTC倒频谱
     zmel=log(zmelcy);
     zmel=dct(zmel);                
     % take the DCT
- 
     subplot 212;
     plot(zmel(2,:))
     xlabel('f/频率hz')
     ylabel('y/倒谱图')
     title('信号经过DCT后的倒谱图(1*64维)');
     
+    % computing delta--3delta coefficients
     delta_zmel = zeros(size(zmel,1),size(zmel,2));
     delta_delta_zmel = delta_zmel;
     xpend = zeros(64,1);
     xxpend=[xpend,xpend,zmel,xpend,xpend];
-
     for t=3:size(zmel,2)+2
         for cn=1:64
 
@@ -91,7 +88,7 @@ function spec3d = melspectrogramcomputing(seq)%seq is a raw audio sequence(mono)
     % exam=zeros(64,602,3);
     % for 
     %computing delta coefficients
-
+    
     %computing delta-delta coefficients
     xxxpend=[xpend,xpend,delta_zmel,xpend,xpend];
     for t=3:size(zmel,2)+2
